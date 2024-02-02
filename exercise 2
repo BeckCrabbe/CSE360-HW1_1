@@ -1,1 +1,64 @@
+%pylab inline
+# Perfect sensor
+def sense(x):
+    return x
+#x0 = 1
+def simulate(Δt, x, u):
+    #x = x0
+    x += Δt * u
+    return x
+# x = a*cos(t)
+# y = a*sin(t)*cos(t)
+
+
+def control(t,y):
+    ux = -1*sin(t)
+    uy = 2*cos(2*t)
+    return array([ux, uy])
+
+tf = 8.
+Δt = 0.1    # Time step
+time = linspace(0.,tf, int(tf / Δt) + 1)  # Time interval
+
+
+# Initial conditions
+x = array([1., 0.]) #initial condition of 0,0
+x_log = [copy(x)]
+
+for t in time:
+    y = sense(x)
+    u = control(t, y)    
+    x = simulate(Δt, x, u)
+    x_log.append(copy(x))
+x_log = array(x_log)
+
+grid()
+plot(x_log[:,0], x_log[:,1])
+
+conda install conda-forge::jsanimation
+conda update -n base -c defaults conda
+import matplotlib.pyplot as plt
+from matplotlib import animation
+from JSAnimation import IPython_display    
+from IPython.display import HTML
+    
+
+
+fig, ax = plt.subplots()
+
+def animate(t):
+    ax.clear()
+    
+    # Path
+    plot(x_log[:,0], x_log[:,1], 'r--')
+    
+    # Initial conditions
+    plot(x_log[t,0], x_log[t,1], 'bo')
+    
+    
+
+anim = animation.FuncAnimation(fig, animate, frames=len(time), interval=60)
+
+HTML(anim.to_jshtml())
+
 
